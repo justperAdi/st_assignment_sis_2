@@ -1,0 +1,12 @@
+{
+  "name": "sis2-toolshop-playwright",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/node": "22.10.2"
+  }
+}
