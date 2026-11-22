@@ -50,6 +50,23 @@ The suite has only 7 tests that take ~20 s together, while each shard spends abo
 (checkout, `npm ci`, browser + system dependency install). So sharding cannot cut the total much here:
 the gain is bounded by the test time, and the extra merge job adds its own setup. It pays off once the suite grows.
 
+### Known issue: Cloudflare challenge on GitHub runners
+
+The tests run against the public site practicesoftwaretesting.com, which is behind Cloudflare bot protection.
+On GitHub-hosted runners (datacenter IPs) the site sometimes answers with a Cloudflare
+*"Performing security verification"* page instead of the app. In the first runs this hit the two tests that sign in
+and then load a page (TC-02a, TC-03): the snapshot in `test-results-2/.../error-context.md` shows the Cloudflare page
+(Ray ID `a5ea08c62ad870c5`). The same tests pass locally on macOS and inside the Linux image
+`mcr.microsoft.com/playwright:v1.56.1-noble` (step 4.1 of the guide), so the failures come from the environment, not the tests.
+The challenge is not bypassed on purpose. The proper fix is to run the open-source Toolshop app
+(testsmith-io/practice-software-testing, Docker Compose) as a service inside the workflow and set `BASE_URL` to it.
+
+### Runner image
+
+`runs-on: ubuntu-24.04` instead of `ubuntu-latest`: `ubuntu-latest` now points to Ubuntu 26.04, and
+`npx playwright install --with-deps` in Playwright 1.56.1 fails there with
+*"Playwright does not support chromium on ubuntu26.04-x64"*.
+
 ### Running locally
 
 ```bash
